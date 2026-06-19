@@ -1,0 +1,419 @@
+<!DOCTYPE html>  
+<html lang="bn">  
+<head>  
+    <title>SHADMAN CODER - CLOUD PANEL</title>  
+    <meta charset="utf-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
+    
+    <style>  
+        :root {  
+            --bg-color: #03040b;  
+            --panel-bg: rgba(6, 8, 20, 0.85);  
+            --font-head: 'Orbitron', sans-serif;  
+            --font-body: 'Inter', sans-serif;  
+        }  
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }  
+
+        body {  
+            background-color: var(--bg-color);  
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(at 50% 0%, rgba(189, 0, 255, 0.2) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(0, 240, 255, 0.15) 0px, transparent 50%);
+            background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+            font-family: var(--font-body);  
+            min-height: 100vh;  
+            padding-bottom: 120px;  
+            overflow-x: hidden;  
+        }  
+
+        #blast-canvas {   
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;   
+            pointer-events: none; z-index: 99999;   
+        }  
+
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }  
+
+        /* ==========================================================
+           ULTRA VIP REAL RGB ANIMATION (সব টেক্সট ও বাটনের জন্য)
+           ========================================================== */
+        @keyframes fullRGBEffect {
+            0% { color: #00f0ff; border-color: #00f0ff; fill: #00f0ff; box-shadow: 0 0 12px rgba(0, 240, 255, 0.6); }
+            25% { color: #bd00ff; border-color: #bd00ff; fill: #bd00ff; box-shadow: 0 0 12px rgba(189, 0, 255, 0.6); }
+            50% { color: #00ff66; border-color: #00ff66; fill: #00ff66; box-shadow: 0 0 12px rgba(0, 255, 102, 0.6); }
+            75% { color: #ffff00; border-color: #ffff00; fill: #ffff00; box-shadow: 0 0 12px rgba(255, 255, 0, 0.6); }
+            100% { color: #00f0ff; border-color: #00f0ff; fill: #00f0ff; box-shadow: 0 0 12px rgba(0, 240, 255, 0.6); }
+        }
+
+        @keyframes textRGBOnly {
+            0% { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
+            25% { color: #bd00ff; text-shadow: 0 0 10px rgba(189, 0, 255, 0.6); }
+            50% { color: #00ff66; text-shadow: 0 0 10px rgba(0, 255, 102, 0.6); }
+            75% { color: #ffff00; text-shadow: 0 0 10px rgba(255, 255, 0, 0.6); }
+            100% { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
+        }
+
+        /* সমস্ত টেক্সট এলিমেন্ট RGB হবে */
+        h5, p, span, div, label, h4, i, pre, .logo-txt {
+            animation: textRGBOnly 2s infinite linear;
+        }
+
+        .premium-neon-text {
+            font-family: var(--font-head);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            font-size: 36px;
+            margin-top: 12px;
+            animation: textRGBOnly 2s infinite linear;
+        }
+
+        /* --- VIP Box & Cards --- */  
+        .box, .metric-card, .upload-card, .cyber-panel {
+            background: var(--panel-bg) !important;
+            border: 1px solid transparent !important;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+            animation: fullRGBEffect 2s infinite linear;
+        }
+
+        /* ==========================================================
+           ALL BUTTONS RGB SETUP (START, STOP, REBOOT, WIPE, ETC)
+           ========================================================== */
+        .btn-m, .upload-btn, .save-btn {   
+            padding: 14px; border-radius: 12px; text-decoration: none; text-align: center;   
+            font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center;   
+            gap: 8px; border: 1px solid transparent !important; font-family: var(--font-head); cursor: pointer; transition: 0.2s ease;  
+            text-transform: uppercase; letter-spacing: 1px;
+            background: rgba(5, 6, 15, 0.9) !important;
+            animation: fullRGBEffect 1s infinite linear;
+        }  
+        .btn-m:hover, .upload-btn:hover { 
+            transform: scale(1.03) translateY(-2px);
+            filter: brightness(1.3);
+        }  
+
+        /* --- User Top Navigation --- */  
+        .user-bar {  
+            background: rgba(4, 5, 11, 0.9); padding: 15px 30px; display: flex;  
+            justify-content: space-between; align-items: center; backdrop-filter: blur(20px);  
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05);  
+        }  
+        .nav-logo-container { display: flex; align-items: center; gap: 12px; }
+        
+        /* VIP লোগো গ্লোয়িং বর্ডার */
+        .nav-logo { 
+            width: 42px; height: 42px; border-radius: 50%; 
+            object-fit: cover;
+            animation: fullRGBEffect 1s infinite linear;
+        }
+        .user-bar .logo-txt { font-family: var(--font-head); font-weight: 900; font-size: 15px; letter-spacing: 2px; }
+
+        /* --- Layout Container --- */  
+        .container { width: 95%; max-width: 700px; margin: 40px auto; position: relative; z-index: 1; }  
+        
+        /* --- Metrics Layout --- */
+        .premium-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 35px; }
+        .metric-card { padding: 22px 10px; border-radius: 16px; text-align: center; }
+        .metric-card i { font-size: 22px; margin-bottom: 8px; display: block; }
+        .metric-card h5 { font-family: var(--font-head); font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .metric-card p { font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 700; }
+
+        /* --- Upload Component --- */  
+        .upload-card { padding: 40px 25px; border-radius: 24px; text-align: center; }  
+        #file-details {  
+            margin-top: 20px; padding: 15px; text-align: left;
+            background: rgba(255, 255, 255, 0.02); border-radius: 12px; display: none;  
+        }  
+            
+        /* --- Project Node Box --- */  
+        .box { padding: 28px; border-radius: 24px; margin-bottom: 30px; }  
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 10px; font-weight: 900; font-family: var(--font-head); display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; animation: none !important; }  
+        .status-running { background: rgba(0, 255, 102, 0.1); color: #00ff66 !important; border: 1px solid #00ff66; }  
+        .status-offline { background: rgba(255, 71, 87, 0.1); color: #ff4757 !important; border: 1px solid #ff4757; }  
+          
+        .runtime-container { margin: 18px 0 22px 0; padding: 14px 18px; background: rgba(255, 255, 255, 0.02); border-radius: 14px; display: flex; align-items: center; justify-content: space-between; }  
+        .runtime-clock { font-family: var(--font-head); font-size: 14px; font-weight: 900; }  
+            
+        /* --- Action Grid --- */  
+        .button-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }  
+
+        pre { background: #020307; padding: 16px; height: 140px; overflow-y: auto; border-radius: 14px; font-size: 11px; margin-top: 20px; font-family: monospace; border: 1px solid rgba(255,255,255,0.05); }  
+            
+        /* --- Footer --- */
+        .branding { text-align: center; padding: 50px 0 20px 0; }  
+        .main-branding-logo { 
+            width: 95px; height: 95px; border-radius: 50%; 
+            margin: 0 auto 15px auto; display: block; object-fit: cover;
+            animation: fullRGBEffect 1s infinite linear;
+        }
+        .branding p { font-size: 11px; font-weight: 700; letter-spacing: 3px; margin-top: 14px; text-transform: uppercase; }  
+          
+        .social-bar { background: rgba(3, 4, 9, 0.95); padding: 18px; position: fixed; bottom: 0; left:0; width: 100%; display: flex; justify-content: center; gap: 45px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 1001; backdrop-filter: blur(15px); }  
+        .social-icon { font-size: 26px; transition: 0.2s ease; }  
+        .social-icon:hover { transform: scale(1.2) translateY(-3px); filter: brightness(1.3); }  
+
+        /* Control Settings Area */
+        .menu-toggle { position: fixed; top: 85px; right: 20px; width: 45px; height: 45px; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1000; backdrop-filter: blur(15px); }  
+        .cyber-panel { position: fixed; top: 145px; right: -320px; width: 280px; padding: 25px; border-radius: 16px; z-index: 999; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; gap: 20px; }  
+        .cyber-panel.active { right: 20px; }  
+        .color-dots-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }  
+        .color-dot { width: 30px; height: 30px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }  
+        .setting-label { font-size: 11px; font-family: var(--font-head); text-transform: uppercase; letter-spacing: 1px; display: block; }  
+        input[type="range"] { width: 100%; cursor: pointer; background: #1e293b; height: 5px; border-radius: 5px; border: none; }  
+    </style>  
+</head>  
+
+<body>  
+    <div id="particles-js"></div>  
+    <canvas id="blast-canvas"></canvas>  
+
+    <div class="menu-toggle" onclick="toggleMenu()">  
+        <i class="fa-solid fa-sliders" id="menuIcon"></i>  
+    </div>  
+
+    <div class="cyber-panel" id="sidePanel">  
+        <div style="font-size: 11px; text-align: center; border-bottom: 1px solid #1e293b; padding-bottom: 10px; letter-spacing: 2px; font-family: var(--font-head);">SYSTEM ENVIRONMENT</div>  
+        <div>  
+            <span class="setting-label"><i class="fa-solid fa-palette"></i> Neon Accent</span>  
+            <div class="color-dots-container">  
+                <div class="color-dot active" style="background: #00f0ff;" onclick="changeHue('#00f0ff', this)"></div>  
+                <div class="color-dot" style="background: #ff0055;" onclick="changeHue('#ff0055', this)"></div>  
+                <div class="color-dot" style="background: #00ff66;" onclick="changeHue('#00ff66', this)"></div>  
+                <div class="color-dot" style="background: #bd00ff;" onclick="changeHue('#bd00ff', this)"></div>  
+                <div class="color-dot" style="background: #ffff00;" onclick="changeHue('#ffff00', this)"></div>  
+            </div>  
+        </div>  
+        <div>  
+            <span class="setting-label"><i class="fa-solid fa-circle"></i> Node Size</span>  
+            <input type="range" id="pSize" min="10" max="60" value="30" oninput="updateSize(this.value)">  
+        </div>  
+        <div>  
+            <span class="setting-label"><i class="fa-solid fa-bolt"></i> Flow Rate</span>  
+            <input type="range" id="pSpeed" min="1" max="12" value="3" oninput="updateSpeed(this.value)">  
+        </div>  
+    </div>  
+
+    <div class="user-bar">  
+        <div class="nav-logo-container">
+            <img src="https://cdn.phototourl.com/free/2026-06-19-e41044e2-1fb3-4f7c-b11a-d579bbbde502.jpg" alt="LAM CODEX Logo" class="nav-logo">
+            <div class="logo-txt">CLOUD SERVER MANAGER</div>  
+        </div>
+        <a href="/logout" style="font-size:18px;"><i class="fa-solid fa-power-off"></i></a>  
+    </div>  
+
+    <div class="container">  
+        <div class="premium-metrics">
+            <div class="metric-card">
+                <i class="fa-solid fa-clock"></i>
+                <h5>24/7/365</h5>
+                <p>Non-Stop Host</p>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-chart-line"></i>
+                <h5>99.99%</h5>
+                <p>Uptime SLA</p>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h5>DDoS Filter</h5>
+                <p>Enterprise</p>
+            </div>
+        </div>
+
+        <div class="upload-card">  
+            <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">  
+                <input type="file" name="file" id="fileInput" accept=".zip" required style="display:none;">  
+                <label for="fileInput" style="cursor:pointer; display:block;">  
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 40px; margin-bottom: 12px;"></i>  
+                    <div style="font-weight: 700; letter-spacing: 1.5px; font-family: var(--font-head); font-size:14px;">UPLOAD ZIP PROJECT</div>  
+                </label>  
+                <div id="file-details">  
+                    <div style="display: flex; align-items: center; gap: 12px;">  
+                        <i class="fa-solid fa-file-zipper" style="font-size: 20px;"></i>  
+                        <div style="overflow: hidden;">  
+                            <div id="file-name" style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No file selected</div>  
+                            <div id="file-size" style="font-size: 11px; margin-top:2px;">0 KB</div>  
+                        </div>  
+                    </div>  
+                </div>  
+                <button type="submit" class="upload-btn">DEPLOY NODE SERVER</button>  
+            </form>  
+        </div>  
+
+        {% for app in apps %}  
+        <div class="box">  
+            <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:18px;">  
+                <span style="font-size:15px; font-weight: 700; font-family:var(--font-head);">{{ app.name }}</span>  
+                <span id="status-{{ app.name }}" class="status-badge {% if app.running %}status-running{% else %}status-offline{% endif %}">  
+                    ● {% if app.running %}RUNNING{% else %}OFFLINE{% endif %}  
+                </span>  
+            </div>  
+            <div class="runtime-container">  
+                <span style="font-size: 11px; font-weight:500; letter-spacing:0.5px;">LIVE METRIC RUNTIME:</span>  
+                <span class="runtime-clock" id="timer-{{ app.name }}">00d 00h 00m 00s</span>  
+            </div>  
+            <div class="button-grid">  
+                <a href="/run/{{ app.name }}" class="btn-m run"><i class="fa-solid fa-play"></i> START</a>  
+                <a href="/stop/{{ app.name }}" class="btn-m stop"><i class="fa-solid fa-stop"></i> STOP</a>  
+                <button onclick="openFM('{{ app.name }}')" class="btn-m edit"><i class="fa-solid fa-code"></i> FILE ACCESS</button>  
+                <a href="/restart/{{ app.name }}" class="btn-m restart"><i class="fa-solid fa-arrow-rotate-left"></i> REBOOT</a>  
+                <a href="/download/{{ app.name }}" class="btn-m download"><i class="fa-solid fa-download"></i> BACKUP</a>  
+                <button onclick="confirmDelete('{{ app.name }}', '/delete/{{ app.name }}')" class="btn-m delete"><i class="fa-solid fa-trash-can"></i> WIPE</button>  
+            </div>  
+            <pre id="log-{{ app.name }}">Terminal ready. Waiting for node initiation...</pre>  
+        </div>  
+        {% endfor %}  
+
+        <div class="branding">  
+            <img src="https://cdn.phototourl.com/free/2026-06-19-e41044e2-1fb3-4f7c-b11a-d579bbbde502.jpg" alt="LAM CODEX Branding Logo" class="main-branding-logo">
+            <div class="premium-neon-text">LAM CODEX</div>  
+            <p>Premium Hosting Solutions & Community</p>  
+        </div>  
+    </div>  
+
+    <div class="social-bar">  
+        <a href="https://t.me/LamCodexofc" target="_blank" class="social-icon" style="color:#0088cc;"><i class="fa-brands fa-telegram"></i></a>  
+        <a href="https://www.youtube.com/@lamcodex" target="_blank" class="social-icon" style="color:#ff0000;"><i class="fa-brands fa-youtube"></i></a>  
+        <a href="https://t.me/LamCodexofc" target="_blank" class="social-icon" style="color:#e1306c;"><i class="fa-brands fa-instagram"></i></a>  
+        <a href="https://t.me/LamCodexofc" target="_blank" class="social-icon" style="color:#fff;"><i class="fa-brands fa-tiktok"></i></a>  
+    </div>  
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>  
+    
+    <script>  
+        let startTimes = {};  
+        let pConfig = { color: "#00f0ff", size: 30, speed: 3 };  
+      
+        document.getElementById('fileInput').addEventListener('change', function(e) {  
+            const file = e.target.files[0];  
+            const detailBox = document.getElementById('file-details');  
+            if (file) {  
+                document.getElementById('file-name').innerText = file.name;  
+                let size = file.size / 1024;  
+                document.getElementById('file-size').innerText = size > 1024 ? (size / 1024).toFixed(2) + " MB" : size.toFixed(2) + " KB";  
+                detailBox.style.display = 'block';  
+            } else {  
+                detailBox.style.display = 'none';  
+            }  
+        });  
+      
+        function loadParticles() {  
+            particlesJS('particles-js', {  
+                "particles": {  
+                    "number": { "value": 40, "density": { "enable": true, "value_area": 900 } },  
+                    "color": { "value": pConfig.color },  
+                    "shape": { "type": "circle" },  
+                    "opacity": { "value": 0.3 },  
+                    "size": { "value": pConfig.size, "random": true },  
+                    "line_linked": { "enable": true, "distance": 140, "color": pConfig.color, "opacity": 0.1, "width": 1 },  
+                    "move": { "enable": true, "speed": pConfig.speed, "out_mode": "out" }  
+                },  
+                "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": false } } },  
+                "retina_detect": true  
+            });  
+        }  
+      
+        function toggleMenu() {  
+            const panel = document.getElementById('sidePanel');  
+            panel.classList.toggle('active');  
+            document.getElementById('menuIcon').className = panel.classList.contains('active') ? "fa-solid fa-xmark" : "fa-solid fa-sliders";  
+        }  
+      
+        function changeHue(newColor, element) {  
+            pConfig.color = newColor;  
+            document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));  
+            element.classList.add('active');  
+            loadParticles();  
+        }  
+      
+        function updateSize(val) { pConfig.size = parseInt(val); loadParticles(); }  
+        function updateSpeed(val) { pConfig.speed = parseInt(val); loadParticles(); }  
+      
+        function updateSystem() {  
+            {% for app in apps %}  
+                fetch('/get_log/{{ app.name }}').then(res => res.json()).then(data => {  
+                    const badge = document.getElementById('status-{{ app.name }}');  
+                    const logBox = document.getElementById('log-{{ app.name }}');  
+                    if (data.log) logBox.innerText = data.log;  
+                    if (data.status === "RUNNING") {  
+                        badge.innerText = "● RUNNING";  
+                        badge.className = "status-badge status-running";  
+                        if (data.start_time > 0) startTimes['{{ app.name }}'] = data.start_time;  
+                    } else {  
+                        badge.innerText = "● OFFLINE";  
+                        badge.className = "status-badge status-offline";  
+                        delete startTimes['{{ app.name }}'];  
+                    }  
+                });  
+            {% endfor %}  
+        }  
+      
+        function runTimers() {  
+            Object.keys(startTimes).forEach(name => {  
+                const diff = Date.now() - startTimes[name];  
+                if (diff > 0) {  
+                    const d = Math.floor(diff / 86400000);  
+                    const h = Math.floor((diff % 86400000) / 3600000);  
+                    const m = Math.floor((diff % 3600000) / 60000);  
+                    const s = Math.floor((diff % 60000) / 1000);  
+                    document.getElementById(`timer-${name}`).innerText = `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;  
+                }  
+            });  
+        }  
+      
+        setInterval(updateSystem, 3000);  
+        setInterval(runTimers, 1000);  
+        loadParticles();  
+      
+        function confirmDelete(name, url) {  
+            Swal.fire({ title: 'মুছে ফেলবেন?', text: `${name} রিমুভ করা হবে!`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff4757', background: '#05060f', color: '#fff' })  
+            .then(res => { if(res.isConfirmed) window.location.href = url; });  
+        }  
+
+        /* শব্দহীন টাচ/ক্লিক স্পার্কল ইঞ্জিন */
+        const canvas = document.getElementById('blast-canvas');  
+        const ctx = canvas.getContext('2d');  
+        let particlesList = [];  
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }  
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();  
+
+        class BlastParticle {  
+            constructor(x, y) {  
+                this.x = x; this.y = y;  
+                const angle = Math.random() * Math.PI * 2;  
+                const speed = Math.random() * 5 + 3;  
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;  
+                this.radius = Math.random() * 2 + 1; this.alpha = 1;  
+                this.decay = Math.random() * 0.03 + 0.02;  
+                const colors = ['#00f0ff', '#bd00ff', '#00ff66', '#ffff00'];  
+                this.color = colors[Math.floor(Math.random() * colors.length)];  
+            }  
+            draw() {  
+                ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath();  
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);  
+                ctx.fillStyle = this.color; ctx.shadowBlur = 10; ctx.shadowColor = this.color;  
+                ctx.fill(); ctx.restore();  
+            }  
+            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.1; this.alpha -= this.decay; }  
+        }  
+
+        function triggerBlast(x, y) { for (let i = 0; i < 30; i++) { particlesList.push(new BlastParticle(x, y)); } }  
+        function renderBlasts() {  
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  
+            particlesList = particlesList.filter(p => p.alpha > 0);  
+            particlesList.forEach(p => { p.update(); p.draw(); });  
+            requestAnimationFrame(renderBlasts);  
+        }  
+        renderBlasts();  
+        window.addEventListener('mousedown', function(e) { triggerBlast(e.clientX, e.clientY); });  
+        window.addEventListener('touchstart', function(e) { var touch = e.touches[0]; triggerBlast(touch.clientX, touch.clientY); }, {passive: true});  
+    </script>  
+</body>  
+</html>
